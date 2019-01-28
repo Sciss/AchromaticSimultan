@@ -16,10 +16,10 @@ package de.sciss.chrmtc
 import de.sciss.chrmtc.Geom.LatLon
 import de.sciss.file._
 import de.sciss.lucre.stm.InMemory
-import de.sciss.synth.{Buffer, Server, Synth, SynthDef}
-import de.sciss.synth.ugen
+import de.sciss.synth.{Buffer, GE, Server, Synth, SynthDef, ugen}
 import de.sciss.synth.Ops._
 
+import scala.concurrent.{Future, Promise}
 import scala.swing.event.ValueChanged
 import scala.swing.{BoxPanel, FlowPanel, Label, MainFrame, Orientation, Slider, Swing}
 
@@ -32,11 +32,13 @@ object ConvolutionTest {
     run()
   }
 
-  def run(): Unit = {
+  def run(gui: Boolean = true): Future[(Double, Double) => Unit] = {
     val fDisk = file("/data/projects/Maeanderungen/audio_work/edited/HB_1_NC_T176.wav")
     val IrLen = 128
     // val IrNum = 2702
     val IrPt  = Common.readPos().map(_.toCartesian)
+
+    val promise = Promise[(Double, Double) => Unit]()
 
     Server.run { s =>
       require (s.sampleRate == 48000.0)
@@ -48,11 +50,24 @@ object ConvolutionTest {
         val index0  = "index".ar(0f)
         val disk    = DiskIn.ar(numChannels = 1, buf = bufDisk, loop = 1)
         val irPhase = Phasor.ar(hi = IrLen)
-        val index   = Latch.ar(index0, irPhase sig_== 0)
-        val irIndex = irPhase + (index * IrLen)
-        val ir      = BufRd.ar(numChannels = 2, buf = bufIr, index = irIndex, interp = 1)
-        val conv    = Convolution.ar(in = disk, kernel = ir, frameSize = IrLen)
-        val sig     = Limiter.ar(conv * "amp".kr(1f))
+        val irTrig  = irPhase sig_== 0
+        val irTrigA = PulseDivider.ar(irTrig, div = 2, start = 0)
+        val irTrigB = PulseDivider.ar(irTrig, div = 2, start = 1)
+        val indexA  = Latch.ar(index0, irTrigA)
+        val indexB  = Latch.ar(index0, irTrigB)
+//        val dlyTime = IrLen / SampleRate.ir
+        val fader   = LFTri.ar(SampleRate.ir / IrLen, iphase = 1)
+
+        def mkConvolution(index: GE): GE = {
+          val irIndex = irPhase + (index * IrLen)
+          val ir      = BufRd.ar(numChannels = 2, buf = bufIr, index = irIndex, interp = 1)
+          Convolution.ar(in = disk, kernel = ir, frameSize = IrLen)
+        }
+
+        val conA    = mkConvolution(indexA)
+        val conB    = mkConvolution(indexB)
+        val con     = LinXFade2.ar(conA, conB, pan = fader)
+        val sig     = Limiter.ar(con * "amp".kr(1f))
         Out.ar(0, sig)
       }
       df.recv(s)
@@ -61,7 +76,17 @@ object ConvolutionTest {
         syn.play("test", args = Seq("bufIr" -> b.id, "bufDisk" -> bufDisk.id))
       })
 
-      Swing.onEDT {
+      val setPosF = { (a: Double, e: Double) =>
+        val ll      = LatLon(lon = a, lat = e)
+        val pt      = ll.toCartesian
+        val bestPt  = IrPt.minBy(_.distanceSq(pt))
+        val index   = IrPt.indexOf(bestPt)
+        syn.set("index" -> index)
+      }
+
+      promise.success(setPosF)
+
+      if (gui) Swing.onEDT {
         var azi = 0
         var ele = 0
 
@@ -85,11 +110,7 @@ object ConvolutionTest {
         updateLabels()
 
         def setPos(): Unit = {
-          val ll      = LatLon(lon = -azi.toRadians, lat = ele.toRadians)
-          val pt      = ll.toCartesian
-          val bestPt  = IrPt.minBy(_.distanceSq(pt))
-          val index   = IrPt.indexOf(bestPt)
-          syn.set("index" -> index)
+          setPosF(-azi.toRadians, ele.toRadians)
           updateLabels()
         }
 
@@ -135,5 +156,7 @@ object ConvolutionTest {
         }
       }
     }
+
+    promise.future
   }
 }
