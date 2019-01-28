@@ -43,7 +43,8 @@ lazy val root = project.withId(baseNameL).in(file("."))
     description := appDescription,
     resolvers         ++= Seq(
       "Oracle Repository" at "http://download.oracle.com/maven",                                          // required for sleepycat
-      "Unidata Releases"  at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"   // required for NetCDF
+      "Unidata Releases"  at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases",  // required for NetCDF
+      "jzv3d releases"    at "http://maven.jzy3d.org/releases"                                            // 3D chart
     ),
     libraryDependencies ++= Seq(
       "com.tinkerforge" %  "tinkerforge"          % deps.main.tinker,           // IMU sensor interface
