@@ -24,6 +24,7 @@ import org.jzy3d.plot3d.primitives.Point
 
 import scala.swing.{Component, Dimension, Frame, MainFrame, SimpleSwingApplication}
 
+/** Plots the position data, in order to verify its consistency */
 object PlotHRIRPos extends SimpleSwingApplication {
 
   lazy val top: Frame = {
