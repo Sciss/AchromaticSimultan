@@ -39,7 +39,10 @@ lazy val root = project.withId(baseNameL).in(file("."))
   .settings(
     name        := baseName,
     description := appDescription,
-    resolvers += "Oracle Repository" at "http://download.oracle.com/maven", // required for sleepycat
+    resolvers         ++= Seq(
+      "Oracle Repository" at "http://download.oracle.com/maven",                                          // required for sleepycat
+      "Unidata Releases"  at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"   // required for NetCDF
+    ),
     libraryDependencies ++= Seq(
       "de.sciss"  %% "lucre-bdb"            % deps.main.lucre,            // object system (database backend)
       "de.sciss"  %% "lucrematrix"          % deps.main.lucreMatrix,      // HDF support
