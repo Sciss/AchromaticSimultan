@@ -32,7 +32,7 @@ object ConvolutionTest {
     run()
   }
 
-  def run(gui: Boolean = true): Future[(Double, Double) => Unit] = {
+  def run(gui: Boolean = true, verb: Boolean = true, distant: Boolean = true): Future[(Double, Double) => Unit] = {
     val fDisk = file("/data/projects/Maeanderungen/audio_work/edited/HB_1_NC_T176.wav")
     val IrLen = 128
     // val IrNum = 2702
@@ -48,7 +48,8 @@ object ConvolutionTest {
         val bufIr   = "bufIr".ir
         val bufDisk = "bufDisk".ir
         val index0  = "index".ar(0f)
-        val disk    = DiskIn.ar(numChannels = 1, buf = bufDisk, loop = 1)
+        val disk0   = DiskIn.ar(numChannels = 1, buf = bufDisk, loop = 1)
+        val disk    = if (!distant) disk0 else LPF.ar(HPF.ar(disk0, 100), 10000)
         val irPhase = Phasor.ar(hi = IrLen)
         val irTrig  = irPhase sig_== 0
         val irTrigA = PulseDivider.ar(irTrig, div = 2, start = 0)
@@ -67,7 +68,14 @@ object ConvolutionTest {
         val conA    = mkConvolution(indexA)
         val conB    = mkConvolution(indexB)
         val con     = LinXFade2.ar(conA, conB, pan = fader)
-        val sig     = Limiter.ar(con * "amp".kr(1f))
+
+        val sum     = if (!verb) con else {
+          val dlyTime = (IrLen / SampleRate.ir - ControlDur.ir).max(0) // + 0.003
+          val dly     = DelayN.ar(disk, dlyTime, dlyTime)
+          con + GVerb.ar(dly, roomSize = 10f, revTime = 0.5f, damping = 0.5f, dryLevel = 0f) * 0.3
+        }
+
+        val sig     = Limiter.ar(sum * "amp".kr(1f))
         Out.ar(0, sig)
       }
       df.recv(s)
