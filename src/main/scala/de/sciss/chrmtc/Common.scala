@@ -41,4 +41,8 @@ object Common {
       afIn.close()
     }
   }
+
+  final val TinkerHost            = "localhost"
+  final val TinkerPort            = 4223
+  final val TinkerDefaultIMU_UID  = "6jDAtS"   // the one I've got...
 }

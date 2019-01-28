@@ -275,4 +275,26 @@ object Geom {
       LatLon(lat, lon)
     }
   }
+
+  case class Quat(w: Double, x: Double, y: Double, z: Double) {
+    private def quatMul(q: Array[Double], r: Array[Double], res: Array[Double]): Unit = {
+      res(0) = r(0) * q(0) - r(1) * q(1) - r(2) * q(2) - r(3) * q(3)
+      res(1) = r(0) * q(1) + r(1) * q(0) - r(2) * q(3) + r(3) * q(2)
+      res(2) = r(0) * q(2) + r(1) * q(3) + r(2) * q(0) - r(3) * q(1)
+      res(3) = r(0) * q(3) - r(1) * q(2) + r(2) * q(1) + r(3) * q(0)
+    }
+
+    def rotate(p: Pt3): Pt3 = {
+      val r     = Array(0.0, p.x, p.y, p.z)
+      val q     = Array(w, x, y, z)
+      val tmp   = new Array[Double](4)
+      quatMul(q, r, tmp)  // first
+      // conjugate
+      q(1)      = -q(1)
+      q(2)      = -q(2)
+      q(3)      = -q(3)
+      quatMul(tmp, q, r)  // second
+      Pt3(r(1), r(2), r(3))
+    }
+  }
 }

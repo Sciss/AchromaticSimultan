@@ -11,11 +11,12 @@ lazy val authorEMail    = "contact@sciss.de"
 
 lazy val deps = new {
   val main = new {
-    val soundProcesses = "3.24.0"
-    val jzy3d          = "1.0.2"
-    val lucre          = "3.11.0"
-    val lucreMatrix    = "1.6.0"
-    val slf4j          = "1.7.25"
+    val soundProcesses  = "3.24.0"
+    val jzy3d           = "1.0.2"
+    val lucre           = "3.11.0"
+    val lucreMatrix     = "1.6.0"
+    val slf4j           = "1.7.25"
+    val tinker          = "2.1.21"
   }
 }
 
@@ -45,10 +46,11 @@ lazy val root = project.withId(baseNameL).in(file("."))
       "Unidata Releases"  at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"   // required for NetCDF
     ),
     libraryDependencies ++= Seq(
-      "de.sciss"  %% "lucre-bdb"            % deps.main.lucre,            // object system (database backend)
-      "de.sciss"  %% "lucrematrix"          % deps.main.lucreMatrix,      // HDF support
-      "de.sciss"  %% "soundprocesses-core"  % deps.main.soundProcesses,   // computer-music framework
-      "org.jzy3d" %  "jzy3d-api"            % deps.main.jzy3d,            // 3D Plot
-      "org.slf4j" %  "slf4j-nop"            % deps.main.slf4j,            // disable logger output
+      "com.tinkerforge" %  "tinkerforge"          % deps.main.tinker,           // IMU sensor interface
+      "de.sciss"        %% "lucre-bdb"            % deps.main.lucre,            // object system (database backend)
+      "de.sciss"        %% "lucrematrix"          % deps.main.lucreMatrix,      // HDF support
+      "de.sciss"        %% "soundprocesses-core"  % deps.main.soundProcesses,   // computer-music framework
+      "org.jzy3d"       %  "jzy3d-api"            % deps.main.jzy3d,            // 3D Plot
+      "org.slf4j"       %  "slf4j-nop"            % deps.main.slf4j,            // disable logger output
     )
   )
