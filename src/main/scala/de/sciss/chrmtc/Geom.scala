@@ -1,6 +1,6 @@
 /*
  *  Geom.scala
- *  (_chr_m_t_c)
+ *  (Achromatic simultan)
  *
  *  Copyright (c) 2019 Hanns Holger Rutz. All rights reserved.
  *

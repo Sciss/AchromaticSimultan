@@ -1,5 +1,5 @@
-lazy val baseName       = "_chr_m_t_c"
-lazy val baseNameL      = "chrmtc" // baseName.toLowerCase
+lazy val baseName       = "AchromaticSimultan"
+lazy val baseNameL      = baseName.toLowerCase
 lazy val appDescription = "Sketches for a sound art piece"
 lazy val projectVersion = "0.1.0-SNAPSHOT"
 lazy val mimaVersion    = "0.1.0"

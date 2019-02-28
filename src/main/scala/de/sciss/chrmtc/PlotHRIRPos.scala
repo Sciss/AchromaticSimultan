@@ -1,6 +1,6 @@
 /*
  *  PlotHRIRPos.scala
- *  (_chr_m_t_c)
+ *  (Achromatic simultan)
  *
  *  Copyright (c) 2019 Hanns Holger Rutz. All rights reserved.
  *
@@ -28,7 +28,7 @@ import scala.swing.{Component, Dimension, Frame, MainFrame, SimpleSwingApplicati
 object PlotHRIRPos extends SimpleSwingApplication {
 
   lazy val top: Frame = {
-    val data = Common.readPos()
+    val data = Common.readPosLL()
     val cart = data.map(_.toCartesian)
     val view = new Impl(cart)
     new MainFrame {

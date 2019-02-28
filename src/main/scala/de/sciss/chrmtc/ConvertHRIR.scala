@@ -1,6 +1,6 @@
 /*
  *  ConvertHRIR.scala
- *  (_chr_m_t_c)
+ *  (Achromatic simultan)
  *
  *  Copyright (c) 2019 Hanns Holger Rutz. All rights reserved.
  *
@@ -14,6 +14,7 @@
 package de.sciss.chrmtc
 
 import de.sciss.chrmtc.Common._
+import de.sciss.chrmtc.Geom.LatLon
 import de.sciss.file._
 import de.sciss.lucre.artifact.{Artifact, ArtifactLocation}
 import de.sciss.lucre.matrix.DataSource
@@ -43,8 +44,8 @@ object ConvertHRIR {
   def run(): Unit = {
     implicit val cursor: S = InMemory()
 
-    if (fAudioIR.exists() && fAudioPos.exists()) {
-      println(s"Files '$fAudioIR' and '$fAudioPos' already exist.")
+    if (fAudioIR.exists() && fAudioPosLL.exists() && fAudioPosC.exists()) {
+      println(s"Files '$fAudioIR', '$fAudioPosLL', '$fAudioPosC' already exist.")
       return
     }
 
@@ -94,24 +95,39 @@ object ConvertHRIR {
       val arrPos = new Array[Double](readPos.size.toInt)
       readPos.readDouble1D(arrPos, 0, arrPos.length)
 
-      val afOutPos = AudioFile.openWrite(fAudioPos, AudioFileSpec(numChannels = 2, sampleRate = 1))
-      try {
-        val bufPos = arrPos.grouped(readPos.numChannels).map(_.take(2).map(_.toRadians.toFloat)).toArray.transpose
-        afOutPos.write(bufPos)
-
-      } finally {
-        afOutPos.close()
+      if (!fAudioPosLL.exists() || !fAudioPosC.exists()) {
+        val afOutPosLL  = AudioFile.openWrite(fAudioPosLL, AudioFileSpec(numChannels = 2, sampleRate = 1))
+        try {
+          val afOutPosC = AudioFile.openWrite(fAudioPosC , AudioFileSpec(numChannels = 3, sampleRate = 1))
+          try {
+            val arr0      = arrPos.grouped(readPos.numChannels).map(_.take(2).map(_.toRadians.toFloat)).toArray
+            val bufPosLL  = arr0.transpose
+            val bufPosC   = arr0.map { case Array(lon, lat) =>
+              val ll = LatLon(lat = lat, lon = lon)
+              val c  = ll.toCartesian
+              Array(c.x.toFloat, c.y.toFloat, c.z.toFloat)
+            } .transpose
+            afOutPosLL.write(bufPosLL )
+            afOutPosC .write(bufPosC  )
+          } finally {
+            afOutPosC.close()
+          }
+        } finally {
+          afOutPosLL.close()
+        }
       }
 
-      val afOutIR = AudioFile.openWrite(fAudioIR, AudioFileSpec(numChannels = 2, sampleRate = sr))
-      try {
-        arrIR.grouped(readIR.numChannels).foreach { ir =>
-          val (left, right) = ir.map(_.toFloat).splitAt(irLen)
-          afOutIR.write(Array(left, right))
-        }
+      if (!fAudioIR.exists()) {
+        val afOutIR = AudioFile.openWrite(fAudioIR, AudioFileSpec(numChannels = 2, sampleRate = sr))
+        try {
+          arrIR.grouped(readIR.numChannels).foreach { ir =>
+            val (left, right) = ir.map(_.toFloat).splitAt(irLen)
+            afOutIR.write(Array(left, right))
+          }
 
-      } finally {
-        afOutIR.close()
+        } finally {
+          afOutIR.close()
+        }
       }
 
     } finally {

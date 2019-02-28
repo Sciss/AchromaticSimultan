@@ -1,6 +1,6 @@
 /*
  *  ConvolutionTest.scala
- *  (_chr_m_t_c)
+ *  (Achromatic simultan)
  *
  *  Copyright (c) 2019 Hanns Holger Rutz. All rights reserved.
  *
@@ -36,7 +36,8 @@ object ConvolutionTest {
     val fDisk = file("/data/projects/Maeanderungen/audio_work/edited/HB_1_NC_T176.wav")
     val IrLen = 128
     // val IrNum = 2702
-    val IrPt  = Common.readPos().map(_.toCartesian)
+//    val IrPt  = Common.readPosLL().map(_.toCartesian)
+    val IrPt  = Common.readPosC()
 
     val promise = Promise[(Double, Double) => Unit]()
 

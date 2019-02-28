@@ -1,4 +1,4 @@
-# \_chr\_m\_t\_c
+Achromatic (simultan)
 
 [![Build Status](https://travis-ci.org/Sciss/_chr_m_t_c.svg?branch=master)](https://travis-ci.org/Sciss/_chr_m_t_c)
 
