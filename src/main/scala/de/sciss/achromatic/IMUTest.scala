@@ -11,11 +11,11 @@
  *  contact@sciss.de
  */
 
-package de.sciss.chrmtc
+package de.sciss.achromatic
 
 import com.tinkerforge.BrickIMUV2.QuaternionListener
 import com.tinkerforge.{BrickIMUV2, IPConnection}
-import de.sciss.chrmtc.Geom.{Pt3, Quat}
+import de.sciss.achromatic.Geom.{Pt3, Quat}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

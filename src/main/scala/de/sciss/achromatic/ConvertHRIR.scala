@@ -11,10 +11,10 @@
  *  contact@sciss.de
  */
 
-package de.sciss.chrmtc
+package de.sciss.achromatic
 
-import de.sciss.chrmtc.Common._
-import de.sciss.chrmtc.Geom.LatLon
+import de.sciss.achromatic.Common._
+import de.sciss.achromatic.Geom.LatLon
 import de.sciss.file._
 import de.sciss.lucre.artifact.{Artifact, ArtifactLocation}
 import de.sciss.lucre.matrix.DataSource

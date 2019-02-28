@@ -11,32 +11,36 @@
  *  contact@sciss.de
  */
 
-package de.sciss.chrmtc
+package de.sciss.achromatic
 
 import java.awt.BorderLayout
 
-import de.sciss.chrmtc.Geom.Pt3
+import de.sciss.achromatic.Geom.Pt3
 import javax.swing.JPanel
 import org.jzy3d.chart.{AWTChart, ChartLauncher}
 import org.jzy3d.colors.Color
 import org.jzy3d.maths.Coord3d
 import org.jzy3d.plot3d.primitives.Point
 
-import scala.swing.{Component, Dimension, Frame, MainFrame, SimpleSwingApplication}
+import scala.swing.{Component, Dimension, Frame, MainFrame, SimpleSwingApplication, Swing}
 
 /** Plots the position data, in order to verify its consistency */
-object PlotHRIRPos extends SimpleSwingApplication {
-
-  lazy val top: Frame = {
+object PlotHRIRPos {
+  def main(args: Array[String]): Unit = {
     val data = Common.readPosLL()
     val cart = data.map(_.toCartesian)
-    val view = new Impl(cart)
-    new MainFrame {
-      contents = view.component
-      pack().centerOnScreen()
-      open()
-    }
+    run(cart)
   }
+
+  def run(pts: Array[Pt3]): Unit =
+    Swing.onEDT {
+      val view = new Impl(pts)
+      new MainFrame {
+        contents = view.component
+        pack().centerOnScreen()
+        open()
+      }
+    }
 
   private final class Impl(data: Array[Pt3]) { impl =>
 

@@ -11,9 +11,9 @@
  *  contact@sciss.de
  */
 
-package de.sciss.chrmtc
+package de.sciss.achromatic
 
-import de.sciss.chrmtc.Geom.LatLon
+import de.sciss.achromatic.Geom.LatLon
 import de.sciss.file._
 import de.sciss.lucre.stm.InMemory
 import de.sciss.synth.{Buffer, GE, Server, Synth, SynthDef, ugen}

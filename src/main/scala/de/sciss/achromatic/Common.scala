@@ -11,9 +11,9 @@
  *  contact@sciss.de
  */
 
-package de.sciss.chrmtc
+package de.sciss.achromatic
 
-import de.sciss.chrmtc.Geom.{LatLon, Pt3}
+import de.sciss.achromatic.Geom.{LatLon, Pt3}
 import de.sciss.file._
 import de.sciss.synth.io.AudioFile
 
@@ -23,8 +23,9 @@ object Common {
   val baseDir     : File = file("/data/projects/AchromaticSimultan")
   val fSOFA       : File = baseDir / "HRIR_L2702.sofa"
   val fAudioIR    : File = fSOFA.replaceExt("aif")
-  val fAudioPosLL : File = fAudioIR.replaceName(s"${fAudioIR.base}-pos.aif")  // lat-lon
-  val fAudioPosC  : File = fAudioIR.replaceName(s"${fAudioIR.base}-posC.aif")  // cartesian
+  val fAudioPosLL : File = fAudioIR.replaceName(s"${fAudioIR.base}-pos.aif")    // lat-lon
+  val fAudioPosC  : File = fAudioIR.replaceName(s"${fAudioIR.base}-posC.aif")   // cartesian
+  val fAudioIdxG  : File = fAudioIR.replaceName(s"${fAudioIR.base}-idxG.aif")   // sampled grid
 
   def readPosLL(): Array[LatLon] = {
     val afIn = AudioFile.openRead(fAudioPosLL)
@@ -51,7 +52,7 @@ object Common {
       buf.transpose.map { arr =>
         val x = arr(0).toDouble
         val y = arr(1).toDouble
-        val z = arr(1).toDouble
+        val z = arr(2).toDouble
 //        Polar(theta = arr(0), phi = arr(1))
         Pt3(x, y, z)
       }

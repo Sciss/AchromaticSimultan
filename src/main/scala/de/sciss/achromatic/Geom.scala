@@ -11,7 +11,7 @@
  *  contact@sciss.de
  */
 
-package de.sciss.chrmtc
+package de.sciss.achromatic
 
 import de.sciss.numbers.Implicits._
 
